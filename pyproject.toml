@@ -1,0 +1,17 @@
+[project]
+name = "looker-dashboard-builder-agent"
+version = "0.1.0"
+description = "Looker Dashboard Builder Agent with ADK, Looker MCP, and PKCE OAuth"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-adk>=1.13.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "google-auth>=2.29.0",
+    "google-auth-oauthlib>=1.2.0",
+    "requests>=2.31.0",
+    "httpx>=0.27.0",
+    "mcp>=1.0.0,<2.0.0",
+    "python-dotenv>=1.0.0",
+]

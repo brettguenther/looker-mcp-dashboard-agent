@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looker Dashboard Builder AI</title>
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Auth Connect Screen -->
+        <div id="connect-screen" class="glass-card fade-in">
+            <div class="brand-logo">
+                <div class="logo-icon">📊</div>
+                <h1>Looker Dashboard Builder</h1>
+            </div>
+            <p class="subtitle">Connect your Looker account with OAuth to design, build, and verify production Looker dashboards using Gemini and Looker MCP.</p>
+
+            <div class="config-form">
+                <div class="input-group">
+                    <label for="looker-host">Looker Instance Host</label>
+                    <input type="text" id="looker-host" value="" placeholder="e.g. https://yourcompany.looker.com">
+                </div>
+                <div class="input-group">
+                    <label for="client-id">OAuth Client ID (GUID)</label>
+                    <input type="text" id="client-id" value="" placeholder="Enter registered OAuth client ID">
+                </div>
+                <div class="input-group">
+                    <label for="redirect-uri">Redirect URI</label>
+                    <input type="text" id="redirect-uri" value="https://localhost:8001" readonly class="readonly-input">
+                    <span class="help-text">Register this exact Redirect URI in your Looker OAuth Application.</span>
+                </div>
+            </div>
+
+            <button id="btn-connect" class="btn btn-primary pulse-animation">
+                <span>Connect Looker Account</span>
+                <span class="arrow">→</span>
+            </button>
+
+            <div id="auth-status" class="status-msg hidden"></div>
+        </div>
+
+        <!-- Main Dashboard Builder App (Initially Hidden) -->
+        <div id="chat-screen" class="chat-layout hidden fade-in">
+            <!-- Sidebar -->
+            <aside class="sidebar glass-card">
+                <div class="sidebar-header">
+                    <div class="logo-icon-small">📊</div>
+                    <h2>Dashboard Builder</h2>
+                </div>
+
+                <div class="user-status">
+                    <div class="status-indicator online"></div>
+                    <div class="user-info">
+                        <span class="user-name">Looker User</span>
+                        <span class="user-role">Authenticated via OAuth</span>
+                    </div>
+                </div>
+
+                <!-- Explore Scope Selector -->
+                <div class="sidebar-section">
+                    <div class="section-title">
+                        <span>DATA SOURCE SCOPE</span>
+                        <button id="btn-refresh-explores" class="btn-icon" title="Refresh Explores">🔄</button>
+                    </div>
+                    <p class="section-desc">Select or enter the Explore to restrict this dashboard to:</p>
+                    
+                    <div class="explore-picker">
+                        <select id="explore-select" class="dropdown-select">
+                            <option value="">-- Choose Model / Explore --</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom input fallback -->
+                    <div class="custom-scope-inputs">
+                        <div class="scope-row">
+                            <input type="text" id="custom-model" placeholder="Model (e.g. basic_ecomm)" class="mini-input">
+                            <input type="text" id="custom-explore" placeholder="Explore (e.g. basic_order_items)" class="mini-input">
+                        </div>
+                        <button id="btn-apply-custom-scope" class="btn btn-secondary btn-sm">Set Custom Scope</button>
+                    </div>
+
+                    <div id="active-scope-badge" class="scope-badge">
+                        <span class="badge-dot"></span>
+                        <span id="scope-text" class="scope-text">Scope: basic_ecomm / basic_order_items</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard Starter Templates -->
+                <div class="sidebar-section">
+                    <div class="section-title">QUICK PROMPTS</div>
+                    <div class="template-list">
+                        <button class="template-btn" data-prompt="Build an Executive Sales & Revenue Performance Scorecard with top-line KPI cards (revenue YoY, total orders, average order value), a monthly sales trend chart, and a product category breakdown table.">
+                            📈 Executive Sales Scorecard
+                        </button>
+                        <button class="template-btn" data-prompt="Create a Customer Acquisition & Cohort Retention Dashboard analyzing new user signups, traffic sources breakdown, and customer lifetime value.">
+                            👥 Customer Acquisition & Cohorts
+                        </button>
+                        <button class="template-btn" data-prompt="Build an Operations & Fulfillment Dashboard tracking order status distribution, inventory turn rates, and delivery fulfillment times.">
+                            📦 Operations & Fulfillment
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button id="btn-disconnect" class="btn btn-secondary">
+                        <span>Disconnect Account</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Workspace -->
+            <main class="chat-container glass-card">
+                <header class="chat-header">
+                    <div class="header-title">
+                        <h1>Looker Dashboard Architect</h1>
+                        <p id="header-scope-info" class="status-text">Target Scope: basic_ecomm / basic_order_items — Ready to build</p>
+                    </div>
+                </header>
+
+                <!-- Messages Panel -->
+                <div id="chat-messages" class="messages-panel">
+                    <div class="message agent fade-in">
+                        <div class="avatar">🤖</div>
+                        <div class="msg-bubble">
+                            <h3>Welcome to Looker Dashboard Builder!</h3>
+                            <p>I build production-grade User Defined Dashboards (UDDs) in Looker with interactive filters, KPI summary bands, trend lines, breakdown grids, and live embed previews.</p>
+                            <p><strong>To get started:</strong></p>
+                            <ul>
+                                <li>Confirm or change your <strong>Model / Explore</strong> in the left sidebar.</li>
+                                <li>Describe your dashboard or click one of the quick prompts below!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="chat-input-container">
+                    <form id="chat-form" class="chat-form">
+                        <input type="text" id="user-input" placeholder="Describe the dashboard to build (e.g. Build an Executive Revenue & Margin Scorecard with date and category filters)..." autocomplete="off">
+                        <button type="submit" id="btn-send" class="btn btn-primary">
+                            <span>Build Dashboard</span>
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
