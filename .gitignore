@@ -63,8 +63,10 @@ credentials.json
 client_secrets.json
 service_account.json
 
-# ADK & Cloud Build / Deploy artifacts
+# ADK, Agent Skills & Cloud Build / Deploy artifacts
 .adk/
+.agents/
+.resources/
 build_deploy/
 
 # IDE / Editor files
